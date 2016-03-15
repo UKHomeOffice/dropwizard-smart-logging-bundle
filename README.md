@@ -42,5 +42,3 @@ Add the corresponding configuration to your config file (MyServiceConfiguration 
 
 Be careful of what you log, make sure you validate headers to ensure your logs don't become a potential attack
 areas.
-
-
