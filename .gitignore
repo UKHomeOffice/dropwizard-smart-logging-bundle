@@ -1,0 +1,26 @@
+# IntelliJ IDEA #
+/.idea
+/*.iml
+
+# Vagrant
+/.vagrant
+
+# Ignore eclipse project files #
+.classpath
+.settings
+.project
+
+# Ignore byte code
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# Ignore Output folder #
+/target
+/logs
+
+# Ignore dependency reduced POM #
+dependency-reduced-pom.xml
