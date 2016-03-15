@@ -10,6 +10,16 @@ Wouldn't it be easier to let an API client to send identifiable information to t
 
 ## How
 
+Add the corresponding configuration to your config file (MyServiceConfiguration in this example) and implement interface
+
+```java
+
+    MyServiceConfiguration extends Configuration implements PrependLogConfiguration
+    
+    @JsonProperty
+    private SmartLogging smartLogging;
+```
+
 Specifiy what header you want to log in your requests by adding this to your configuration:
 
 ```YAML
@@ -22,6 +32,7 @@ Add your new log format to your chosen appender
     logFormat: "%-6level [%d{HH:mm:ss.SSS}] [%t] %logger{5} - %X{X_UNIQUE_ID} %msg %n"
 ```
 
+
 This bundle can be added to a dropwizard app using:
 
 ```java
@@ -31,12 +42,6 @@ This bundle can be added to a dropwizard app using:
     }
 ```
 
-Add the corresponding configuration to your config file (MyServiceConfiguration in this example)
-
-```java
-    @JsonProperty
-    private SmartLogging smartLogging;
-```
 
 ## Security
 
