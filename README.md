@@ -14,7 +14,7 @@ Add the corresponding configuration to your config file (MyServiceConfiguration 
 
 ```java
 
-    MyServiceConfiguration extends Configuration implements PrependLogConfiguration
+    public class MyServiceConfiguration extends Configuration implements PrependLogConfiguration
     
     @JsonProperty
     private SmartLogging smartLogging;
