@@ -25,6 +25,10 @@ Specifiy what header you want to log in your requests by adding this to your con
 ```YAML
 smartLogging:
   useHeader: X_UNIQUE_ID
+  extraFields: {
+      "host": "localhost",
+      "label" : "rest-photo-internet"
+    }
 ```
 Add your new log format to your chosen appender
 
