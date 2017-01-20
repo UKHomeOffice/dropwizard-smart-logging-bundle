@@ -5,6 +5,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.ThrowableProxyUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import uk.gov.hmpo.dropwizard.smartLogging.bundle.LogEntryHolder;
 
 import java.io.IOException;
 import java.util.Date;
@@ -12,15 +13,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class JsonEncoder extends PatternLayoutEncoder {
-    private boolean immediateFlush = true;
+
+    private static final byte[] RETURN_BYTES = "\n".getBytes();
+
     @Override
     public void doEncode(ILoggingEvent event) throws IOException {
         outputStream.write(convertToBytes(event, event.getMessage()));
-        outputStream.write("\n".getBytes());
-
-        if (immediateFlush) {
-            outputStream.flush();
-        }
+        outputStream.write(RETURN_BYTES);
+        outputStream.flush();
     }
 
     private byte[] convertToBytes(ILoggingEvent event, String message) throws JsonProcessingException {
@@ -28,7 +28,7 @@ public class JsonEncoder extends PatternLayoutEncoder {
 
         String sessionId = mdc.get("X-REQ-ID");
 
-        HashMap<String, Object> jsonContent = new HashMap<>();
+        HashMap<String, Object> jsonContent = new HashMap<>(LogEntryHolder.getExtraFields());
         jsonContent.put("timestamp", new Date());
         jsonContent.put("message", message);
         jsonContent.put("level", event.getLevel().toString());
@@ -37,24 +37,12 @@ public class JsonEncoder extends PatternLayoutEncoder {
         jsonContent.put("thread", event.getThreadName());
         addExceptionMessage(event, jsonContent);
 
-        getAndAddIfNotNull("appenvironment", mdc, jsonContent);
-        getAndAddIfNotNull("apphost", mdc, jsonContent);
-        getAndAddIfNotNull("apptype", mdc, jsonContent);
-        getAndAddIfNotNull("appname", mdc, jsonContent);
-
-
         return new ObjectMapper().writeValueAsBytes(jsonContent);
     }
 
     private void addExceptionMessage(ILoggingEvent event, Map<String, Object> jsonContent) {
         if (event.getThrowableProxy() != null) {
             jsonContent.put("exceptionMessage", ThrowableProxyUtil.asString(event.getThrowableProxy()));
-        }
-    }
-
-    private void getAndAddIfNotNull(String fieldName, Map<String, String> mdc, HashMap<String, Object> jsonContent) {
-        if (mdc.containsKey(fieldName)) {
-            jsonContent.put(fieldName, mdc.get(fieldName));
         }
     }
 }

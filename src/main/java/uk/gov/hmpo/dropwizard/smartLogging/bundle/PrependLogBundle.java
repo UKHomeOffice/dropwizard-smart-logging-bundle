@@ -15,6 +15,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.EnumSet;
+import java.util.Map;
 
 
 /**
@@ -29,6 +30,7 @@ public class PrependLogBundle implements ConfiguredBundle<PrependLogConfiguratio
 
             @Override
             public void init(FilterConfig filterConfig) throws ServletException {
+                LogEntryHolder.setExtraFields(prependLogConfiguration.getSmartLogging().extraFields);
             }
 
             @Override
@@ -39,9 +41,6 @@ public class PrependLogBundle implements ConfiguredBundle<PrependLogConfiguratio
 
                 MDC.put(prependLogConfiguration.getSmartLogging().useHeader,
                         httpRequest.getHeader(prependLogConfiguration.getSmartLogging().useHeader));
-
-                prependLogConfiguration.getSmartLogging()
-                        .extraFields.entrySet().stream().forEach(f -> MDC.put(f.getKey(), f.getValue()));
 
                 filterChain.doFilter(httpRequest, servletResponse);
             }
