@@ -26,22 +26,22 @@ public class JsonEncoder extends PatternLayoutEncoder {
     private byte[] convertToBytes(ILoggingEvent event, String message) throws JsonProcessingException {
         Map<String, String> mdc = event.getMDCPropertyMap();
 
-        String applicationName = mdc.get("applicationName");
         String sessionId = mdc.get("X-REQ-ID");
-        String environment = mdc.get("environment");
-        String host = mdc.get("host");
 
         HashMap<String, Object> jsonContent = new HashMap<>();
         jsonContent.put("timestamp", new Date());
         jsonContent.put("message", message);
         jsonContent.put("level", event.getLevel().toString());
         jsonContent.put("sessionID", sessionId);
-        jsonContent.put("environment", environment);
-        jsonContent.put("label", applicationName);
-        jsonContent.put("host", host);
         jsonContent.put("logger", event.getLoggerName());
         jsonContent.put("thread", event.getThreadName());
         addExceptionMessage(event, jsonContent);
+
+        getAndAddIfNotNull("appenvironment", mdc, jsonContent);
+        getAndAddIfNotNull("apphost", mdc, jsonContent);
+        getAndAddIfNotNull("apptype", mdc, jsonContent);
+        getAndAddIfNotNull("appname", mdc, jsonContent);
+
 
         return new ObjectMapper().writeValueAsBytes(jsonContent);
     }
@@ -49,6 +49,12 @@ public class JsonEncoder extends PatternLayoutEncoder {
     private void addExceptionMessage(ILoggingEvent event, Map<String, Object> jsonContent) {
         if (event.getThrowableProxy() != null) {
             jsonContent.put("exceptionMessage", ThrowableProxyUtil.asString(event.getThrowableProxy()));
+        }
+    }
+
+    private void getAndAddIfNotNull(String fieldName, Map<String, String> mdc, HashMap<String, Object> jsonContent) {
+        if (mdc.containsKey(fieldName)) {
+            jsonContent.put(fieldName, mdc.get(fieldName));
         }
     }
 }
