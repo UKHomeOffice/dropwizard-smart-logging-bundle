@@ -48,6 +48,18 @@ This bundle can be added to a dropwizard app using:
     }
 ```
 
+## Json logging
+This bundle now includes (as of version 0.4.2) a json logging encoder which produces logs formatted for logstash. To use simply define a json appender in your dropwizard config file as follows.
+
+```
+# Log info, warnings and errors to our apps' main log in json format.
+# Rolled over daily and retained for 5 days.
+  - type: json
+    threshold: INFO
+    currentLogFilename: ./logs/your-log-file-name.log
+    archivedLogFilenamePattern: ./logs/your-log-file-name-%d.log.gz
+    archivedFileCount: 5
+```
 
 ## Security
 
