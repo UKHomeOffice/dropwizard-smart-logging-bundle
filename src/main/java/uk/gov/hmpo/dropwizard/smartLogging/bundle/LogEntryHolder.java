@@ -1,12 +1,13 @@
 package uk.gov.hmpo.dropwizard.smartLogging.bundle;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Created by cgrimble on 20/01/17.
  */
 public class LogEntryHolder {
-    private static Map<String, String> extraFields;
+    private static Map<String, String> extraFields = new HashMap<>();
 
     public static Map<String, String> getExtraFields() {
         return extraFields;
