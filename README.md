@@ -22,26 +22,23 @@ Add the corresponding configuration to your config file (MyServiceConfiguration 
     private SmartLogging smartLogging;
 ```
 
-Specifiy what header and any extra fields you want to log in your requests by adding this to your configuration:
+Specify what header and any extra fields you want to log in your requests by adding this to your configuration:
 
 ```YAML
 smartLogging:
-  useHeader: X_UNIQUE_ID
-  extraFields: {
-    "environment": "TEST",
-    "host": "localhost",
-    "applicationName" : "my-cool-service"
-  }
-```
-Add your new log format to your chosen appender
+  useHeader: X-REQ-ID
+  extraFields:
+    apphostname: localhost
+    app_securityzone: dap
+    apptype: dropwiward
+    appname: rest-dap-application-store
+    appenvironment: dev
 
-```YAML
-    logFormat: "%-6level [%d{HH:mm:ss.SSS}] [%t] %logger{5} - %X{environment} %X{host} %X{applicationName} %X{X_UNIQUE_ID} %msg %n"
 ```
 
 This bundle can be added to a dropwizard app using:
 
-```java
+```Java
     @Override
     public void initialize(Bootstrap<MyServiceConfiguration> bootstrap) {
         bootstrap.addBundle(new PrependLogBundle());
@@ -49,16 +46,17 @@ This bundle can be added to a dropwizard app using:
 ```
 
 ## Json logging
-This bundle now includes (as of version 0.4.2) a json logging encoder which produces logs formatted for logstash. To use simply define a json appender in your dropwizard config file as follows.
+This bundle now includes (as of version 0.4.3) a json logging encoder which produces logs formatted for logstash. To use simply define a json appender in your dropwizard config file as follows.
 
-```
-# Log info, warnings and errors to our apps' main log in json format.
-# Rolled over daily and retained for 5 days.
-  - type: json
-    threshold: INFO
-    currentLogFilename: ./logs/your-log-file-name.log
-    archivedLogFilenamePattern: ./logs/your-log-file-name-%d.log.gz
-    archivedFileCount: 5
+Add your new log format to your chosen appender
+
+```YAML
+- type: json
+      threshold: DEBUG
+      currentLogFilename: ./logs/rest-dap-application-store.log
+      archivedLogFilenamePattern: ./logs/rest-dap-application-store-%d.log.gz
+      archivedFileCount: 5
+      logFormat: %msg
 ```
 
 ## Security

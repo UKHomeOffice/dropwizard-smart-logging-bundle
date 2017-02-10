@@ -11,20 +11,28 @@ import io.dropwizard.logging.layout.LayoutFactory;
 
 @JsonTypeName("json")
 public class JsonFileAppenderFactory extends FileAppenderFactory {
+
     @Override
-    public Appender build(LoggerContext loggerContext, String s, LayoutFactory layoutFactory, LevelFilterFactory levelFilterFactory, AsyncAppenderFactory asyncAppenderFactory) {
+    public Appender build(LoggerContext loggerContext,
+                          String applicationName,
+                          LayoutFactory layoutFactory,
+                          LevelFilterFactory levelFilterFactory,
+                          AsyncAppenderFactory asyncAppenderFactory) {
+
         FileAppender appender = this.buildAppender(loggerContext);
         appender.setName("file-appender");
         appender.setAppend(true);
         appender.setContext(loggerContext);
+
         JsonEncoder jsonEncoder = new JsonEncoder();
+
         appender.setEncoder(jsonEncoder);
         jsonEncoder.start();
 
         appender.setPrudent(false);
         appender.addFilter(levelFilterFactory.build(this.threshold));
         this.getFilterFactories().stream().forEach((f) -> {
-            appender.addFilter(((io.dropwizard.logging.filter.FilterFactory)f).build());
+            appender.addFilter(((io.dropwizard.logging.filter.FilterFactory) f).build());
         });
         appender.start();
         return this.wrapAsync(appender, asyncAppenderFactory);
