@@ -30,19 +30,15 @@ public class JsonEncoderTest {
 
         OutputStream os = new ByteArrayOutputStream();
 
-        LogEntryHolder.setExtraFields(new HashMap<String, String>(){
+        LogEntryHolder.setExtraFields(new HashMap<String, String>() {
             {
-                put("apphostname", "host");
-                put("appname", "appname");
-                put("appenvironment", "appenvironment");
-                put("apptype", "apptype");
-                put("app_securityzone", "appsecurityzone");
+                put("ExtraKey", "ExtraValue");
             }
         });
 
         LogEntryHolder.setUseHeader("X-Unique-ID");
 
-        JsonEncoder encoder = new JsonEncoder();
+        JsonEncoder encoder = new JsonEncoder("host", "appname", "appenvironment", "apptype", "appsecurityzone");
         encoder.init(os);
 
         ILoggingEvent event = Mockito.mock(ILoggingEvent.class);
@@ -54,13 +50,15 @@ public class JsonEncoderTest {
         Mockito.doReturn(new HashMap<String, String>() {
             {
                 put("X-Unique-ID", "ROMAIN");
-                put("ExtraKey", "ExtraValue");
+                put("ExtraMDCKey", "ExtraMDCValue");
             }
         }).when(event).getMDCPropertyMap();
 
         encoder.doEncode(event);
 
         JsonNode node = om.readTree(os.toString());
+
+        Assert.assertEquals(node.findValue("ExtraKey").asText(), "ExtraValue");
 
         Assert.assertEquals(node.findValue("timestamp").asText(), "1970-01-01T00:00:00.000Z");
         Assert.assertEquals(node.findValue("apphostname").asText(), "host");
@@ -70,13 +68,13 @@ public class JsonEncoderTest {
         Assert.assertEquals(node.findValue("app_securityzone").asText(), "appsecurityzone");
 
         Assert.assertEquals(node.findValue("message_obj").findValue("log").asText(), "Message");
-        Assert.assertEquals(node.findValue("message_obj").findValue("extra").findValue("ExtraKey").asText(), "ExtraValue");
+        Assert.assertEquals(node.findValue("message_obj").findValue("extra").findValue("ExtraMDCKey").asText(), "ExtraMDCValue");
 
         Assert.assertEquals(node.findValue("request_header_x_unique_id").asText(), "ROMAIN");
         Assert.assertEquals(node.findValue("level").asText(), "ERROR");
         Assert.assertEquals(node.findValue("logger").asText(), "LoggerName");
-        Assert.assertEquals(node.findValue("sessionID").asText(), "ROMAIN");
-        Assert.assertTrue(node.findValue("message_obj").findValue("exceptionMessage").asText().contains("java.lang.RuntimeException: Boom!"));
+        Assert.assertEquals(node.findValue("message_obj").findValue("exceptionMessage").findValue("message").asText(), "Boom!");
+        Assert.assertEquals(node.findValue("message_obj").findValue("exceptionMessage").findValue("stacktrace").get(0).asText(), "java.lang.RuntimeException: Boom!");
 
         DateTimeUtils.setCurrentMillisSystem();
     }
