@@ -45,6 +45,15 @@ This bundle can be added to a dropwizard app using:
     }
 ```
 
+## Clearing MDC on each request
+
+```Java
+    @Override
+    public void initialize(Bootstrap<MyServiceConfiguration> bootstrap) {
+        bootstrap.addBundle(new MdcClearingBundle());
+    }
+```
+
 ## Json logging
 This bundle now includes (as of version 0.4.3) a json logging encoder which produces logs formatted for logstash. To use simply define a json appender in your dropwizard config file as follows.
 
