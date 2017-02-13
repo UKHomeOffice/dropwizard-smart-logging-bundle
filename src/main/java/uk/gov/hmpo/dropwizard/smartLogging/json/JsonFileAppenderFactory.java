@@ -1,6 +1,7 @@
 package uk.gov.hmpo.dropwizard.smartLogging.json;
 
 import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.FileAppender;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -15,15 +16,22 @@ import io.dropwizard.validation.ValidationMethod;
 import java.util.Objects;
 
 @JsonTypeName("json")
-public class JsonFileAppenderFactory extends FileAppenderFactory {
+public class JsonFileAppenderFactory extends FileAppenderFactory<ILoggingEvent> {
     @JsonProperty
-    private String apphostname, appenvironment, apptype, appsecurityzone;
+    private String appname, apphostname, appenvironment, apptype, appsecurityzone;
+
+    @JsonIgnore
+    @ValidationMethod(message = "must have appname")
+    public boolean isValidAppname() {
+        return Objects.nonNull(appname);
+    }
 
     @JsonIgnore
     @ValidationMethod(message = "must have apphostname")
     public boolean isValidApphostname() {
         return Objects.nonNull(apphostname);
     }
+
 
     @JsonIgnore
     @ValidationMethod(message = "must have appenvironment")
@@ -44,39 +52,38 @@ public class JsonFileAppenderFactory extends FileAppenderFactory {
     }
 
     @Override
-    public Appender build(LoggerContext loggerContext,
+    public Appender<ILoggingEvent> build(LoggerContext loggerContext,
                           String applicationName,
-                          LayoutFactory layoutFactory,
-                          LevelFilterFactory levelFilterFactory,
-                          AsyncAppenderFactory asyncAppenderFactory) {
+                          LayoutFactory<ILoggingEvent> layoutFactory,
+                          LevelFilterFactory<ILoggingEvent> levelFilterFactory,
+                          AsyncAppenderFactory<ILoggingEvent> asyncAppenderFactory) {
 
-        FileAppender appender = this.buildAppender(loggerContext);
+        FileAppender<ILoggingEvent> appender = buildAppender(loggerContext);
         appender.setName("file-appender");
         appender.setAppend(true);
         appender.setContext(loggerContext);
 
         JsonEncoder jsonEncoder = new JsonEncoder(
                 apphostname,
-                applicationName,
+                appname,
                 appenvironment,
                 apptype,
                 appsecurityzone
         );
 
-        appender.setEncoder(jsonEncoder);
-
         jsonEncoder.setContext(loggerContext);
         jsonEncoder.start();
 
+        appender.setEncoder(jsonEncoder);
         appender.setPrudent(false);
-        appender.addFilter(levelFilterFactory.build(this.threshold));
+        appender.addFilter(levelFilterFactory.build(threshold));
 
-        this.getFilterFactories().stream()
-                .forEach((f) -> appender.addFilter(((io.dropwizard.logging.filter.FilterFactory) f).build()));
+        getFilterFactories().stream()
+                .forEach(f -> appender.addFilter(f.build()));
 
         appender.start();
 
-        return this.wrapAsync(appender, asyncAppenderFactory);
+        return wrapAsync(appender, asyncAppenderFactory);
     }
 
 }
