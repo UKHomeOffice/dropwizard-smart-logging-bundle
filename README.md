@@ -28,11 +28,7 @@ Specify what header and any extra fields you want to log in your requests by add
 smartLogging:
   useHeader: X-REQ-ID
   extraFields:
-    apphostname: localhost
-    app_securityzone: dap
-    apptype: dropwiward
-    appname: rest-dap-application-store
-    appenvironment: dev
+    someExtraKey: someExtrValue
 
 ```
 
@@ -46,6 +42,8 @@ This bundle can be added to a dropwizard app using:
 ```
 
 ## Clearing MDC on each request
+
+This is important to avoid MDC context leaking through request threads.
 
 ```Java
     @Override
@@ -61,11 +59,15 @@ Add your new log format to your chosen appender
 
 ```YAML
 - type: json
-      threshold: DEBUG
-      currentLogFilename: ./logs/rest-dap-application-store.log
-      archivedLogFilenamePattern: ./logs/rest-dap-application-store-%d.log.gz
-      archivedFileCount: 5
-      logFormat: %msg
+    apphostname: localhost
+    appsecurityzone: dap
+    apptype: dropwiward
+    appenvironment: dev
+    threshold: DEBUG
+    currentLogFilename: ./logs/rest-dap-application-store.log
+    archivedLogFilenamePattern: ./logs/rest-dap-application-store-%d.log.gz
+    archivedFileCount: 5
+    logFormat: %msg
 ```
 
 ## Security
