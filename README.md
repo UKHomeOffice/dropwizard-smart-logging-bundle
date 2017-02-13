@@ -61,7 +61,7 @@ Add your new log format to your chosen appender
 - type: json
     apphostname: localhost
     appsecurityzone: dap
-    apptype: dropwiward
+    apptype: dropwizard
     appenvironment: dev
     threshold: DEBUG
     currentLogFilename: ./logs/rest-dap-application-store.log
