@@ -11,7 +11,6 @@ import org.joda.time.format.ISODateTimeFormat;
 import uk.gov.hmpo.dropwizard.smartLogging.bundle.LogEntryHolder;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -29,10 +28,17 @@ public class JsonEncoder extends PatternLayoutEncoder {
 
     private byte[] convertToBytes(ILoggingEvent event, String message) throws JsonProcessingException {
         HashMap<String, Object> jsonContent = new HashMap<>(LogEntryHolder.getExtraFields());
+        String useHeader = LogEntryHolder.getUseHeader();
         jsonContent.put("timestamp", new DateTime().withZone(DateTimeZone.UTC).toString(ISODateTimeFormat.dateTime()));
         jsonContent.put("level", event.getLevel().toString());
         jsonContent.put("logger", event.getLoggerName());
         jsonContent.put("thread", event.getThreadName());
+
+        Optional.ofNullable(event.getMDCPropertyMap())
+                .filter(m -> m.containsKey(useHeader))
+                .map(m -> m.get(useHeader))
+                .map(header ->
+                        jsonContent.put("request_header_x_unique_id", header));
 
         Map<String, Object> messageObj = new HashMap<>();
         messageObj.put("log", message);
@@ -43,11 +49,11 @@ public class JsonEncoder extends PatternLayoutEncoder {
         addRequestId(event, jsonContent);
         addExtraKeys(event, extra);
 
-        if(!extra.isEmpty()) {
+        if (!extra.isEmpty()) {
             messageObj.put("extra", extra);
         }
 
-        addExceptionMessage(event, jsonContent);
+        addExceptionMessage(event, messageObj);
 
         return new ObjectMapper().writeValueAsBytes(jsonContent);
     }
@@ -57,8 +63,7 @@ public class JsonEncoder extends PatternLayoutEncoder {
 
         mdc.entrySet()
                 .stream()
-                .filter((e) -> !e.getKey().equals("X-REQ-ID"))
-                .filter((e) -> !e.getKey().equals("X-Unique-ID"))
+                .filter((e) -> !e.getKey().equals(LogEntryHolder.getUseHeader()))
                 .forEach((entry) ->
                         extra.put(entry.getKey(), entry.getValue())
                 );

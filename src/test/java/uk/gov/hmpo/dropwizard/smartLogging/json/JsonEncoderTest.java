@@ -40,6 +40,8 @@ public class JsonEncoderTest {
             }
         });
 
+        LogEntryHolder.setUseHeader("X-Unique-ID");
+
         JsonEncoder encoder = new JsonEncoder();
         encoder.init(os);
 
@@ -70,10 +72,11 @@ public class JsonEncoderTest {
         Assert.assertEquals(node.findValue("message_obj").findValue("log").asText(), "Message");
         Assert.assertEquals(node.findValue("message_obj").findValue("extra").findValue("ExtraKey").asText(), "ExtraValue");
 
+        Assert.assertEquals(node.findValue("request_header_x_unique_id").asText(), "ROMAIN");
         Assert.assertEquals(node.findValue("level").asText(), "ERROR");
         Assert.assertEquals(node.findValue("logger").asText(), "LoggerName");
         Assert.assertEquals(node.findValue("sessionID").asText(), "ROMAIN");
-        Assert.assertTrue(node.findValue("exceptionMessage").asText().contains("java.lang.RuntimeException: Boom!"));
+        Assert.assertTrue(node.findValue("message_obj").findValue("exceptionMessage").asText().contains("java.lang.RuntimeException: Boom!"));
 
         DateTimeUtils.setCurrentMillisSystem();
     }

@@ -31,10 +31,12 @@ public class JsonFileAppenderFactory extends FileAppenderFactory {
 
         appender.setPrudent(false);
         appender.addFilter(levelFilterFactory.build(this.threshold));
-        this.getFilterFactories().stream().forEach((f) -> {
-            appender.addFilter(((io.dropwizard.logging.filter.FilterFactory) f).build());
-        });
+
+        this.getFilterFactories().stream()
+                .forEach((f) -> appender.addFilter(((io.dropwizard.logging.filter.FilterFactory) f).build()));
+
         appender.start();
+
         return this.wrapAsync(appender, asyncAppenderFactory);
     }
 
