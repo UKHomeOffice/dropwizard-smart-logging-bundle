@@ -44,7 +44,7 @@ public class RequestLogBundle implements Bundle {
 
                     HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
 
-                    logger.info("{} {} took {}ms and returned {}", httpRequest.getMethod(), httpRequest.getRequestURI(), elapsed, httpResponse.getStatus());
+                    logger.info(String.format("%s %s took %sms and returned %s", httpRequest.getMethod(), httpRequest.getRequestURI(), elapsed, httpResponse.getStatus()));
                 }
             }
 
