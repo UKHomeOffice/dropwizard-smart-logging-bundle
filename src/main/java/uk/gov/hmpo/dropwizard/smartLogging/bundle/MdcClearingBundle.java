@@ -27,14 +27,13 @@ public class MdcClearingBundle implements Bundle {
             }
 
             @Override
-            public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain
-                    filterChain) throws IOException, ServletException {
+            public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse,
+                                 FilterChain filterChain) throws IOException, ServletException {
 
                 MDC.clear();
                 logger.trace("Cleared MDC");
 
                 filterChain.doFilter(servletRequest, servletResponse);
-
             }
 
             @Override
