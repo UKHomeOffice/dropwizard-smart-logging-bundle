@@ -5,17 +5,10 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.slf4j.MDC;
 
-import javax.servlet.DispatcherType;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.EnumSet;
-import java.util.Map;
 
 
 /**
@@ -31,6 +24,7 @@ public class PrependLogBundle implements ConfiguredBundle<PrependLogConfiguratio
             @Override
             public void init(FilterConfig filterConfig) throws ServletException {
                 LogEntryHolder.setExtraFields(prependLogConfiguration.getSmartLogging().extraFields);
+                LogEntryHolder.setUseHeader(prependLogConfiguration.getSmartLogging().useHeader);
             }
 
             @Override
@@ -39,8 +33,9 @@ public class PrependLogBundle implements ConfiguredBundle<PrependLogConfiguratio
 
                 HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
 
-                MDC.put(prependLogConfiguration.getSmartLogging().useHeader,
-                        httpRequest.getHeader(prependLogConfiguration.getSmartLogging().useHeader));
+                String useHeader = prependLogConfiguration.getSmartLogging().useHeader;
+
+                MDC.put(useHeader, httpRequest.getHeader(useHeader));
 
                 filterChain.doFilter(httpRequest, servletResponse);
             }

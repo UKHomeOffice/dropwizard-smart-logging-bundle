@@ -15,7 +15,7 @@ public class SmartLogging {
     public String useHeader;
 
     @JsonProperty
-    public Map<String, String> extraFields = new HashMap();
+    public Map<String, String> extraFields = new HashMap<>();
 
     public void setExtraFields(Map<String, String> extraFields) {
         this.extraFields = extraFields;
