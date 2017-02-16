@@ -1,5 +1,9 @@
 # Dropwizard Smart Logging Bundle
 
+## Changelog
+
+v0.4.6: Not swallowing root cause of exception
+
 ## Why
 
 APIs are great. Microservices are great. But how do we keep track of a user who uses multiple APIs throughout a session? 
