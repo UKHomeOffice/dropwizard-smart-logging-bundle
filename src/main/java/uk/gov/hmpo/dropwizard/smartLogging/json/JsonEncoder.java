@@ -12,7 +12,10 @@ import org.joda.time.format.ISODateTimeFormat;
 import uk.gov.hmpo.dropwizard.smartLogging.bundle.LogEntryHolder;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class JsonEncoder extends PatternLayoutEncoder {
@@ -90,11 +93,6 @@ public class JsonEncoder extends PatternLayoutEncoder {
 
     private void addExceptionMessage(ILoggingEvent event, Map<String, Object> jsonContent) {
         Optional.ofNullable(event.getThrowableProxy())
-                .map(t -> {
-                    if (Objects.nonNull(t.getCause())) return t.getCause();
-
-                    return t;
-                })
                 .map(t -> {
                     Map<String, Object> exceptionMessage = new HashMap<>();
                     jsonContent.put("exceptionMessage", exceptionMessage);
