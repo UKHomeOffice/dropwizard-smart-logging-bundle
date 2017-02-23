@@ -63,6 +63,7 @@ Add your new log format to your chosen appender
 
 ```YAML
 - type: json
+    appname: my-name
     apphostname: localhost
     appsecurityzone: dap
     apptype: dropwizard
