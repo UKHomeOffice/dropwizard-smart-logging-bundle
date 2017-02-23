@@ -1,8 +1,8 @@
 package uk.gov.hmpo.dropwizard.smartLogging.json;
 
-import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.ThrowableProxy;
+import ch.qos.logback.core.encoder.LayoutWrappingEncoder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class JsonEncoder extends PatternLayoutEncoder {
+public class JsonEncoder extends LayoutWrappingEncoder<ILoggingEvent> {
 
     private static final byte[] RETURN_BYTES = "\n".getBytes();
 
