@@ -72,7 +72,6 @@ Add your new log format to your chosen appender
     currentLogFilename: ./logs/rest-dap-application-store.log
     archivedLogFilenamePattern: ./logs/rest-dap-application-store-%d.log.gz
     archivedFileCount: 5
-    logFormat: %msg
 ```
 
 ## Security

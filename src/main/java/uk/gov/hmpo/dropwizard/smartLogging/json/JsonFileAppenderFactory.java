@@ -58,6 +58,7 @@ public class JsonFileAppenderFactory extends FileAppenderFactory<ILoggingEvent> 
                           LevelFilterFactory<ILoggingEvent> levelFilterFactory,
                           AsyncAppenderFactory<ILoggingEvent> asyncAppenderFactory) {
 
+
         FileAppender<ILoggingEvent> appender = buildAppender(loggerContext);
         appender.setName("file-appender");
         appender.setAppend(true);
@@ -71,6 +72,7 @@ public class JsonFileAppenderFactory extends FileAppenderFactory<ILoggingEvent> 
                 appsecurityzone
         );
 
+        jsonEncoder.setLayout(buildLayout(loggerContext, layoutFactory));
         jsonEncoder.setContext(loggerContext);
         jsonEncoder.start();
 
