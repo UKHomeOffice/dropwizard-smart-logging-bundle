@@ -15,6 +15,9 @@ public class SmartLogging {
     public String useHeader;
 
     @JsonProperty
+    public RequestLoggingFilter requestLoggingFilter = new RequestLoggingFilter();
+
+    @JsonProperty
     public Map<String, String> extraFields = new HashMap<>();
 
     public void setExtraFields(Map<String, String> extraFields) {
@@ -23,5 +26,10 @@ public class SmartLogging {
 
     public void setUseHeader(String useHeader) {
         this.useHeader = useHeader;
+    }
+
+    static class RequestLoggingFilter {
+        @JsonProperty
+        public String[] excluded  = new String[] {"^/-1$"}; //just an unlikely url to ever match
     }
 }

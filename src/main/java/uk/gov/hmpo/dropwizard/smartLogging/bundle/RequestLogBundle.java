@@ -1,6 +1,6 @@
 package uk.gov.hmpo.dropwizard.smartLogging.bundle;
 
-import io.dropwizard.Bundle;
+import io.dropwizard.ConfiguredBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.apache.commons.validator.routines.RegexValidator;
@@ -16,24 +16,24 @@ import java.util.EnumSet;
 /**
  * Dropwizard filter to log all requests
  */
-public class RequestLogBundle implements Bundle {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+public class RequestLogBundle implements ConfiguredBundle<PrependLogConfiguration> {
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
-    public void run(Environment environment) {
-
-        String[] regexs = new String[]{"^/healthcheck$"};
-        RegexValidator validator = new RegexValidator(regexs, true);
+    public void run(PrependLogConfiguration prependLogConfiguration, Environment environment) throws Exception {
 
         environment.servlets().addFilter("Request logging filter", new Filter() {
+
+            String[] regexs = prependLogConfiguration.getSmartLogging().requestLoggingFilter.excluded;
+            RegexValidator validator = new RegexValidator(regexs, true);
 
             @Override
             public void init(FilterConfig filterConfig) throws ServletException {
             }
 
             @Override
-            public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain
-                    filterChain) throws IOException, ServletException {
+            public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse,
+                                 FilterChain filterChain) throws IOException, ServletException {
 
                 long startTime = System.currentTimeMillis();
                 filterChain.doFilter(servletRequest, servletResponse);
