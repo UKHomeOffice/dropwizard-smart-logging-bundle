@@ -39,7 +39,12 @@ public class RequestLogBundle implements ConfiguredBundle<PrependLogConfiguratio
                 filterChain.doFilter(servletRequest, servletResponse);
 
                 HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
-                if (!validator.isValid(httpRequest.getRequestURI())) {
+
+                boolean isExcludedUrl = validator.isValid(httpRequest.getRequestURI());
+                boolean isGetRequest = "GET".equalsIgnoreCase(httpRequest.getMethod());
+                boolean excludedGetUrl = isExcludedUrl && isGetRequest;
+
+                if (!isExcludedUrl || !excludedGetUrl) {
                     long elapsed = System.currentTimeMillis() - startTime;
 
                     HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
