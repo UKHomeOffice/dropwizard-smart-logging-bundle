@@ -2,6 +2,8 @@
 
 ## Changelog
 
+v0.4.9: Considering only GET requests for healthcheck URLs
+v0.4.8: Configurable healthcheck URLs
 v0.4.6: Not swallowing root cause of exception
 
 ## Why
@@ -30,9 +32,12 @@ Specify what header and any extra fields you want to log in your requests by add
 
 ```YAML
 smartLogging:
-  useHeader: X-REQ-ID
-  extraFields:
-    someExtraKey: someExtrValue
+    useHeader: X-REQ-ID
+    extraFields:
+      someExtraKey: someExtraValue
+    
+    requestLoggingFilter:
+      excluded: "^/healthcheck$"
 
 ```
 
