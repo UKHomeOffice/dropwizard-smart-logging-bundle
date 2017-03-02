@@ -37,7 +37,8 @@ smartLogging:
       someExtraKey: someExtraValue
     
     requestLoggingFilter:
-      excluded: "^/healthcheck$"
+      excluded: 
+        - "^/healthcheck$"
 
 ```
 
