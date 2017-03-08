@@ -68,7 +68,8 @@ This bundle now includes (as of version 0.4.3) a json logging encoder which prod
 Add your new log format to your chosen appender
 
 ```YAML
-- type: json
+- 
+    type: json
     appname: my-name
     apphostname: localhost
     appsecurityzone: dap
