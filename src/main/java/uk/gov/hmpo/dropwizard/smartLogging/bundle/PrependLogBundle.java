@@ -9,6 +9,8 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.EnumSet;
+import java.util.Optional;
+import java.util.UUID;
 
 
 /**
@@ -35,7 +37,9 @@ public class PrependLogBundle implements ConfiguredBundle<PrependLogConfiguratio
 
                 String useHeader = prependLogConfiguration.getSmartLogging().useHeader;
 
-                MDC.put(useHeader, httpRequest.getHeader(useHeader));
+                Optional<String> headerValue = Optional.ofNullable(httpRequest.getHeader(useHeader));
+
+                MDC.put(useHeader, headerValue.orElseGet(() -> UUID.randomUUID().toString()));
 
                 filterChain.doFilter(httpRequest, servletResponse);
             }
