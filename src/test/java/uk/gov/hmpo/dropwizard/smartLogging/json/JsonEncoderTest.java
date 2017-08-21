@@ -46,6 +46,7 @@ public class JsonEncoderTest {
         Mockito.doReturn("LoggerName").when(event).getLoggerName();
         Mockito.doReturn("ThreadName").when(event).getThreadName();
         Mockito.doReturn("Message").when(event).getMessage();
+        Mockito.doReturn("Message").when(event).getFormattedMessage();
         Mockito.doReturn(new ThrowableProxy(new RuntimeException("Boom!"))).when(event).getThrowableProxy();
         Mockito.doReturn(new HashMap<String, String>() {
             {
@@ -77,5 +78,24 @@ public class JsonEncoderTest {
         Assert.assertEquals(node.findValue("message_obj").findValue("exceptionMessage").findValue("stacktrace").get(0).asText(), "java.lang.RuntimeException: Boom!");
 
         DateTimeUtils.setCurrentMillisSystem();
+    }
+
+    @Test
+    public void testLogWithPlaceholders() throws Exception {
+        OutputStream os = new ByteArrayOutputStream();
+
+        JsonEncoder encoder = new JsonEncoder("host", "appname", "appenvironment", "apptype", "appsecurityzone");
+        encoder.init(os);
+
+        ILoggingEvent event = Mockito.mock(ILoggingEvent.class);
+        Mockito.doReturn(ch.qos.logback.classic.Level.ERROR).when(event).getLevel();
+        Mockito.doReturn("Message with {}").when(event).getMessage();
+        Mockito.doReturn("Message with Placeholder").when(event).getFormattedMessage();
+
+        encoder.doEncode(event);
+
+        JsonNode node = om.readTree(os.toString());
+
+        Assert.assertEquals(node.findValue("message_obj").findValue("log").asText(), "Message with Placeholder");
     }
 }
