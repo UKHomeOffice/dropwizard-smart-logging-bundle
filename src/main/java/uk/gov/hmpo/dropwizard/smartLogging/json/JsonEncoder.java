@@ -34,7 +34,7 @@ public class JsonEncoder extends LayoutWrappingEncoder<ILoggingEvent> {
 
     @Override
     public void doEncode(ILoggingEvent event) throws IOException {
-        outputStream.write(convertToBytes(event, event.getMessage()));
+        outputStream.write(convertToBytes(event, event.getFormattedMessage()));
         outputStream.write(RETURN_BYTES);
         outputStream.flush();
     }
