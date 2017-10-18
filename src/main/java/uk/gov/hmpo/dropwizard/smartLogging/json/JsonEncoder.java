@@ -18,7 +18,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class JsonEncoder extends LayoutWrappingEncoder<ILoggingEvent> {
+
+    private Logger logger = LoggerFactory.getLogger(JsonEncoder.class);
 
     private static final byte[] RETURN_BYTES = "\n".getBytes();
 
@@ -33,10 +38,13 @@ public class JsonEncoder extends LayoutWrappingEncoder<ILoggingEvent> {
     }
 
     @Override
-    public void doEncode(ILoggingEvent event) throws IOException {
-        outputStream.write(convertToBytes(event, event.getFormattedMessage()));
-        outputStream.write(RETURN_BYTES);
-        outputStream.flush();
+    public byte[] encode(ILoggingEvent event) {
+        try {
+            return convertToBytes(event, event.getFormattedMessage());
+        } catch (JsonProcessingException e) {
+            logger.error("Enable to process JSON: " + e);
+            return new byte[0];
+        }
     }
 
     private byte[] convertToBytes(ILoggingEvent event, String message) throws JsonProcessingException {
