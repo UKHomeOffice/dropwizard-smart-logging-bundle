@@ -75,7 +75,10 @@ public class JsonEncoder extends LayoutWrappingEncoder<ILoggingEvent> {
 
         addExceptionMessage(event, messageObj);
 
-        return new ObjectMapper().writeValueAsBytes(jsonContent);
+        ObjectMapper mapper = new ObjectMapper();
+        String outputString = mapper.writeValueAsString(jsonContent);
+        StringBuilder sb = new StringBuilder(outputString);
+        return sb.append(System.lineSeparator()).toString().getBytes();
     }
 
     private void addExtraKeys(ILoggingEvent event, Map<String, Object> extra) {
