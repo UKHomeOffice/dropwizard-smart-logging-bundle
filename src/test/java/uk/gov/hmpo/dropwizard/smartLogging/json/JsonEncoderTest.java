@@ -28,8 +28,6 @@ public class JsonEncoderTest {
     public void testJsonEncoder() throws Exception {
         DateTimeUtils.setCurrentMillisFixed(0);
 
-        OutputStream os = new ByteArrayOutputStream();
-
         LogEntryHolder.setExtraFields(new HashMap<String, String>() {
             {
                 put("ExtraKey", "ExtraValue");
@@ -39,7 +37,6 @@ public class JsonEncoderTest {
         LogEntryHolder.setUseHeader("X-Unique-ID");
 
         JsonEncoder encoder = new JsonEncoder("host", "appname", "appenvironment", "apptype", "appsecurityzone");
-        encoder.init(os);
 
         ILoggingEvent event = Mockito.mock(ILoggingEvent.class);
         Mockito.doReturn(ch.qos.logback.classic.Level.ERROR).when(event).getLevel();
@@ -55,9 +52,9 @@ public class JsonEncoderTest {
             }
         }).when(event).getMDCPropertyMap();
 
-        encoder.doEncode(event);
+        String output = new String(encoder.encode(event));
 
-        JsonNode node = om.readTree(os.toString());
+        JsonNode node = om.readTree(output);
 
         Assert.assertEquals(node.findValue("ExtraKey").asText(), "ExtraValue");
 
@@ -82,19 +79,16 @@ public class JsonEncoderTest {
 
     @Test
     public void testMessageWithPlaceholderSyntax() throws Exception {
-        OutputStream os = new ByteArrayOutputStream();
-
         JsonEncoder encoder = new JsonEncoder("host", "appname", "appenvironment", "apptype", "appsecurityzone");
-        encoder.init(os);
 
         ILoggingEvent event = Mockito.mock(ILoggingEvent.class);
         Mockito.doReturn(ch.qos.logback.classic.Level.ERROR).when(event).getLevel();
         Mockito.doReturn("Message with {}").when(event).getMessage();
         Mockito.doReturn("Message with Placeholder").when(event).getFormattedMessage();
 
-        encoder.doEncode(event);
+        String output = new String(encoder.encode(event));
 
-        JsonNode node = om.readTree(os.toString());
+        JsonNode node = om.readTree(output);
 
         Assert.assertEquals(node.findValue("message_obj").findValue("log").asText(), "Message with Placeholder");
     }
