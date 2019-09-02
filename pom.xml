@@ -11,6 +11,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <dropwizard.version>1.3.13</dropwizard.version>
         <commons-validator.version>1.6</commons-validator.version>
+        <commons-beanutils.version>1.9.4</commons-beanutils.version>
         <junit.version>4.12</junit.version>
         <mockito.version>1.10.19</mockito.version>
         <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
@@ -39,7 +40,7 @@
 	<dependency>
 	    <groupId>commons-beanutils</groupId>
 	    <artifactId>commons-beanutils</artifactId>
-	    <version>1.9.4</version>
+	    <version>${commons-beanutils.version}</version>
 	</dependency>
 
         <dependency>
