@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>uk.gov.hmpo</groupId>
     <artifactId>dropwizard-smartLogging</artifactId>
-    <version>0.6.0</version>
+    <version>0.7.0</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <dropwizard.version>1.3.13</dropwizard.version>
+        <dropwizard.version>2.0.20</dropwizard.version>
         <commons-validator.version>1.6</commons-validator.version>
         <commons-beanutils.version>1.9.4</commons-beanutils.version>
         <junit.version>4.12</junit.version>

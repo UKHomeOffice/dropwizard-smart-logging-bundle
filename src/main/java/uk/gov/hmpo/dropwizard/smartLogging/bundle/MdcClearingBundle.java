@@ -1,6 +1,6 @@
 package uk.gov.hmpo.dropwizard.smartLogging.bundle;
 
-import io.dropwizard.Bundle;
+import io.dropwizard.ConfiguredBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.slf4j.Logger;
@@ -14,11 +14,11 @@ import java.util.EnumSet;
 /**
  * Dropwizard filter to log all requests
  */
-public class MdcClearingBundle implements Bundle {
+public class MdcClearingBundle implements ConfiguredBundle<PrependLogConfiguration> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
-    public void run(Environment environment) {
+    public void run(PrependLogConfiguration prependLogConfiguration, Environment environment) {
 
         environment.servlets().addFilter("MDC clearing filter", new Filter() {
 
