@@ -2,11 +2,12 @@
 
 ## Changelog
 
-v0.6.0: Update to dropwizard 1.3.13 and to be a java 11 project
-v0.5.0: Update dropwizard to 1.1.1
-v0.4.9: Considering only GET requests for healthcheck URLs
-v0.4.8: Configurable healthcheck URLs
-v0.4.6: Not swallowing root cause of exception
+* v0.7.0: Update to dropwizard 2.0.20 and replace deprecated io.dropwizard.Bundle interface
+* v0.6.0: Update to dropwizard 1.3.13 and to be a java 11 project
+* v0.5.0: Update dropwizard to 1.1.1
+* v0.4.9: Considering only GET requests for healthcheck URLs
+* v0.4.8: Configurable healthcheck URLs
+* v0.4.6: Not swallowing root cause of exception
 
 ## Why
 
