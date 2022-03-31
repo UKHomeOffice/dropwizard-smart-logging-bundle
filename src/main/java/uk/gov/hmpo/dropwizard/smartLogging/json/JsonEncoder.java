@@ -9,23 +9,22 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.ISODateTimeFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.gov.hmpo.dropwizard.smartLogging.bundle.LogEntryHolder;
 
-import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class JsonEncoder extends LayoutWrappingEncoder<ILoggingEvent> {
 
     private Logger logger = LoggerFactory.getLogger(JsonEncoder.class);
 
-    private static final byte[] RETURN_BYTES = "\n".getBytes();
+    private static final byte[] RETURN_BYTES = "\n".getBytes(StandardCharsets.UTF_8);
 
     private String apphostname, appname, appenvironment, apptype, appsecurityzone;
 
@@ -78,7 +77,7 @@ public class JsonEncoder extends LayoutWrappingEncoder<ILoggingEvent> {
         ObjectMapper mapper = new ObjectMapper();
         String outputString = mapper.writeValueAsString(jsonContent);
         StringBuilder sb = new StringBuilder(outputString);
-        return sb.append(System.lineSeparator()).toString().getBytes();
+        return sb.append(System.lineSeparator()).toString().getBytes(StandardCharsets.UTF_8);
     }
 
     private void addExtraKeys(ILoggingEvent event, Map<String, Object> extra) {

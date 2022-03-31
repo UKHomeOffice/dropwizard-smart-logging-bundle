@@ -24,3 +24,6 @@
 
 # Ignore dependency reduced POM #
 dependency-reduced-pom.xml
+
+# OWASP dependency report
+dependency-check-report.html

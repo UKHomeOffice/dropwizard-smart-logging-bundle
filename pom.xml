@@ -5,17 +5,20 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>uk.gov.hmpo</groupId>
     <artifactId>dropwizard-smartLogging</artifactId>
-    <version>0.7.0</version>
+    <version>0.8.0</version>
 
     <properties>
+        <java-jdk.version>11</java-jdk.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <dropwizard.version>2.0.20</dropwizard.version>
-        <commons-validator.version>1.6</commons-validator.version>
-        <commons-beanutils.version>1.9.4</commons-beanutils.version>
-        <junit.version>4.12</junit.version>
+        <dropwizard.version>2.0.28</dropwizard.version>
+        <commons-validator.version>1.7</commons-validator.version>
+        <jackson-bom.version>2.13.2.1</jackson-bom.version>
+        <junit.version>4.13.2</junit.version>
         <mockito.version>1.10.19</mockito.version>
-        <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
-        <maven-source-plugin.version>3.1.0</maven-source-plugin.version>
+        <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
+        <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
+        <dependency-check-maven.version>7.0.4</dependency-check-maven.version>
+        <spotbugs-maven-plugin.version>4.6.0.0</spotbugs-maven-plugin.version>
     </properties>
 
     <dependencies>
@@ -26,22 +29,10 @@
         </dependency>
 
         <dependency>
-	    <groupId>commons-validator</groupId>
-	    <artifactId>commons-validator</artifactId>
-	    <version>${commons-validator.version}</version>
-	    <exclusions>
-		<exclusion>
-		    <groupId>commons-beanutils</groupId>
-		    <artifactId>commons-beanutils</artifactId>
-		</exclusion>
-	    </exclusions>
-	</dependency>
-
-	<dependency>
-	    <groupId>commons-beanutils</groupId>
-	    <artifactId>commons-beanutils</artifactId>
-	    <version>${commons-beanutils.version}</version>
-	</dependency>
+            <groupId>commons-validator</groupId>
+            <artifactId>commons-validator</artifactId>
+            <version>${commons-validator.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>junit</groupId>
@@ -58,17 +49,38 @@
         </dependency>
     </dependencies>
 
+    <!--
+    Workaround to resolve vulnerability in jackson-databind <= 2.13.2.
+    TODO: Remove below when dropwizard updates to a non-vulnerable version.
+
+    Vulnerability - High:
+    - https://nvd.nist.gov/vuln/detail/CVE-2020-36518
+    - jackson-databind before 2.13.2.1 allows a Java StackOverflow exception and denial of service via a large depth of nested objects.
+    -->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.fasterxml.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>${jackson-bom.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
                 <configuration>
-                    <release>11</release>
+                    <release>${java-jdk.version}</release>
                     <compilerArgument>-Xlint</compilerArgument>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
@@ -78,6 +90,43 @@
                         <id>attach-sources</id>
                         <goals>
                             <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>${dependency-check-maven.version}</version>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <format>html</format>
+                    <outputDirectory>${project.basedir}</outputDirectory>
+                    <failBuildOnAnyVulnerability>true</failBuildOnAnyVulnerability>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+                <version>${spotbugs-maven-plugin.version}</version>
+                <configuration>
+                    <excludeFilterFile>${project.basedir}/SpotbugsExclude.xml</excludeFilterFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>spotbugs</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
                         </goals>
                     </execution>
                 </executions>
