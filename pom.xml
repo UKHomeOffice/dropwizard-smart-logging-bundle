@@ -5,20 +5,25 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>uk.gov.hmpo</groupId>
     <artifactId>dropwizard-smartLogging</artifactId>
-    <version>0.8.0</version>
+    <version>0.9.0</version>
 
     <properties>
-        <java-jdk.version>11</java-jdk.version>
+        <java-jdk.version>17</java-jdk.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <dropwizard.version>2.0.28</dropwizard.version>
+        <dropwizard.version>4.0.0</dropwizard.version>
         <commons-validator.version>1.7</commons-validator.version>
         <jackson-bom.version>2.13.2.1</jackson-bom.version>
-        <junit.version>4.13.2</junit.version>
-        <mockito.version>1.10.19</mockito.version>
-        <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
-        <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
-        <dependency-check-maven.version>7.0.4</dependency-check-maven.version>
+        <junit.version>5.9.3</junit.version>
+        <mockito.version>5.3.1</mockito.version>
+        <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
+        <maven-source-plugin.version>3.3.0</maven-source-plugin.version>
+        <dependency-check-maven.version>8.2.1</dependency-check-maven.version>
         <spotbugs-maven-plugin.version>4.6.0.0</spotbugs-maven-plugin.version>
+        <guava.version>32.0.0-jre</guava.version>
+        <snakeyaml.version>2.0</snakeyaml.version>
+        <mockito-junit-jupiter.version>5.3.1</mockito-junit-jupiter.version>
+        <hamcrest.version>2.2</hamcrest.version>
+        <maven-surefire-plugin.version>3.1.0</maven-surefire-plugin.version>
     </properties>
 
     <dependencies>
@@ -35,39 +40,44 @@
         </dependency>
 
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>${snakeyaml.version}</version>
+        </dependency>
+
+
+        <!-- Test Dependencies        -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
             <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>${mockito-junit-jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest</artifactId>
+            <version>${hamcrest.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
+            <artifactId>mockito-core</artifactId>
             <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <!--
-    Workaround to resolve vulnerability in jackson-databind <= 2.13.2.
-    TODO: Remove below when dropwizard updates to a non-vulnerable version.
-
-    Vulnerability - High:
-    - https://nvd.nist.gov/vuln/detail/CVE-2020-36518
-    - jackson-databind before 2.13.2.1 allows a Java StackOverflow exception and denial of service via a large depth of nested objects.
-    -->
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>com.fasterxml.jackson</groupId>
-                <artifactId>jackson-bom</artifactId>
-                <version>${jackson-bom.version}</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <build>
         <plugins>
@@ -94,7 +104,16 @@
                     </execution>
                 </executions>
             </plugin>
-
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven-surefire-plugin.version}</version>
+                <configuration>
+                    <includes>
+                        <include>**/*Test.java</include>
+                    </includes>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.owasp</groupId>
                 <artifactId>dependency-check-maven</artifactId>
