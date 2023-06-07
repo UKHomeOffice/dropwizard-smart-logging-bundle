@@ -6,19 +6,19 @@ import ch.qos.logback.core.encoder.LayoutWrappingEncoder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.format.ISODateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.hmpo.dropwizard.smartLogging.bundle.LogEntryHolder;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static java.time.ZoneOffset.UTC;
 
 public class JsonEncoder extends LayoutWrappingEncoder<ILoggingEvent> {
 
@@ -48,7 +48,7 @@ public class JsonEncoder extends LayoutWrappingEncoder<ILoggingEvent> {
 
     private byte[] convertToBytes(ILoggingEvent event, String message) throws JsonProcessingException {
         HashMap<String, Object> jsonContent = new HashMap<>(LogEntryHolder.getExtraFields());
-        jsonContent.put("timestamp", new DateTime().withZone(DateTimeZone.UTC).toString(ISODateTimeFormat.dateTime()));
+        jsonContent.put("timestamp", LocalDateTime.now().atZone(UTC).toString());
         jsonContent.put("apphostname", apphostname);
         jsonContent.put("appname", appname);
         jsonContent.put("appenvironment", appenvironment);

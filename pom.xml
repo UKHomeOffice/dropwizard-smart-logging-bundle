@@ -8,17 +8,16 @@
     <version>0.8.0</version>
 
     <properties>
-        <java-jdk.version>11</java-jdk.version>
+        <java-jdk.version>17</java-jdk.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <dropwizard.version>2.0.28</dropwizard.version>
+        <dropwizard.version>4.0.0</dropwizard.version>
         <commons-validator.version>1.7</commons-validator.version>
-        <jackson-bom.version>2.13.2.1</jackson-bom.version>
         <junit.version>4.13.2</junit.version>
         <mockito.version>1.10.19</mockito.version>
-        <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
-        <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
-        <dependency-check-maven.version>7.0.4</dependency-check-maven.version>
-        <spotbugs-maven-plugin.version>4.6.0.0</spotbugs-maven-plugin.version>
+        <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
+        <maven-source-plugin.version>3.3.0</maven-source-plugin.version>
+        <dependency-check-maven.version>8.2.1</dependency-check-maven.version>
+        <spotbugs-maven-plugin.version>4.7.3.4</spotbugs-maven-plugin.version>
     </properties>
 
     <dependencies>
@@ -35,39 +34,27 @@
         </dependency>
 
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>5.3.1</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>${mockito.version}</version>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-core</artifactId>
+            <version>2.2</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.9.3</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
-
-    <!--
-    Workaround to resolve vulnerability in jackson-databind <= 2.13.2.
-    TODO: Remove below when dropwizard updates to a non-vulnerable version.
-
-    Vulnerability - High:
-    - https://nvd.nist.gov/vuln/detail/CVE-2020-36518
-    - jackson-databind before 2.13.2.1 allows a Java StackOverflow exception and denial of service via a large depth of nested objects.
-    -->
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>com.fasterxml.jackson</groupId>
-                <artifactId>jackson-bom</artifactId>
-                <version>${jackson-bom.version}</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <build>
         <plugins>

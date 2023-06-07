@@ -4,29 +4,26 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.ThrowableProxy;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.joda.time.DateTimeUtils;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmpo.dropwizard.smartLogging.bundle.LogEntryHolder;
 
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
 import java.util.HashMap;
 
 /**
  * Created by rgallet on 09/02/17.
  */
-@RunWith(JUnit4.class)
+@ExtendWith(MockitoExtension.class)
 public class JsonEncoderTest {
 
     ObjectMapper om = new ObjectMapper();
 
     @Test
-    public void testJsonEncoder() throws Exception {
-        DateTimeUtils.setCurrentMillisFixed(0);
+    void testJsonEncoder() throws Exception {
+//        DateTimeUtils.setCurrentMillisFixed(0);
 
         LogEntryHolder.setExtraFields(new HashMap<String, String>() {
             {
@@ -56,29 +53,29 @@ public class JsonEncoderTest {
 
         JsonNode node = om.readTree(output);
 
-        Assert.assertEquals(node.findValue("ExtraKey").asText(), "ExtraValue");
+        Assertions.assertEquals(node.findValue("ExtraKey").asText(), "ExtraValue");
 
-        Assert.assertEquals(node.findValue("timestamp").asText(), "1970-01-01T00:00:00.000Z");
-        Assert.assertEquals(node.findValue("apphostname").asText(), "host");
-        Assert.assertEquals(node.findValue("appname").asText(), "appname");
-        Assert.assertEquals(node.findValue("appenvironment").asText(), "appenvironment");
-        Assert.assertEquals(node.findValue("apptype").asText(), "apptype");
-        Assert.assertEquals(node.findValue("app_securityzone").asText(), "appsecurityzone");
+        Assertions.assertEquals(node.findValue("timestamp").asText(), "1970-01-01T00:00:00.000Z");
+        Assertions.assertEquals(node.findValue("apphostname").asText(), "host");
+        Assertions.assertEquals(node.findValue("appname").asText(), "appname");
+        Assertions.assertEquals(node.findValue("appenvironment").asText(), "appenvironment");
+        Assertions.assertEquals(node.findValue("apptype").asText(), "apptype");
+        Assertions.assertEquals(node.findValue("app_securityzone").asText(), "appsecurityzone");
 
-        Assert.assertEquals(node.findValue("message_obj").findValue("log").asText(), "Message");
-        Assert.assertEquals(node.findValue("message_obj").findValue("extra").findValue("ExtraMDCKey").asText(), "ExtraMDCValue");
+        Assertions.assertEquals(node.findValue("message_obj").findValue("log").asText(), "Message");
+        Assertions.assertEquals(node.findValue("message_obj").findValue("extra").findValue("ExtraMDCKey").asText(), "ExtraMDCValue");
 
-        Assert.assertEquals(node.findValue("request_header_x_unique_id").asText(), "ROMAIN");
-        Assert.assertEquals(node.findValue("level").asText(), "ERROR");
-        Assert.assertEquals(node.findValue("logger").asText(), "LoggerName");
-        Assert.assertEquals(node.findValue("message_obj").findValue("exceptionMessage").findValue("message").asText(), "Boom!");
-        Assert.assertEquals(node.findValue("message_obj").findValue("exceptionMessage").findValue("stacktrace").get(0).asText(), "java.lang.RuntimeException: Boom!");
+        Assertions.assertEquals(node.findValue("request_header_x_unique_id").asText(), "ROMAIN");
+        Assertions.assertEquals(node.findValue("level").asText(), "ERROR");
+        Assertions.assertEquals(node.findValue("logger").asText(), "LoggerName");
+        Assertions.assertEquals(node.findValue("message_obj").findValue("exceptionMessage").findValue("message").asText(), "Boom!");
+        Assertions.assertEquals(node.findValue("message_obj").findValue("exceptionMessage").findValue("stacktrace").get(0).asText(), "java.lang.RuntimeException: Boom!");
 
-        DateTimeUtils.setCurrentMillisSystem();
+//        DateTimeUtils.setCurrentMillisSystem();
     }
 
     @Test
-    public void testMessageWithPlaceholderSyntax() throws Exception {
+    void testMessageWithPlaceholderSyntax() throws Exception {
         JsonEncoder encoder = new JsonEncoder("host", "appname", "appenvironment", "apptype", "appsecurityzone");
 
         ILoggingEvent event = Mockito.mock(ILoggingEvent.class);
@@ -90,7 +87,7 @@ public class JsonEncoderTest {
 
         JsonNode node = om.readTree(output);
 
-        Assert.assertEquals(node.findValue("message_obj").findValue("log").asText(), "Message with Placeholder");
+        Assertions.assertEquals(node.findValue("message_obj").findValue("log").asText(), "Message with Placeholder");
     }
 
 }

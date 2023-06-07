@@ -1,17 +1,17 @@
 package uk.gov.hmpo.dropwizard.smartLogging.bundle;
 
+import io.dropwizard.core.setup.Environment;
 import io.dropwizard.jetty.setup.ServletEnvironment;
-import io.dropwizard.setup.Environment;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.slf4j.MDC;
 
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.*;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.io.IOException;
 import java.util.EnumSet;
@@ -19,13 +19,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.sameInstance;
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
-public class PrependLogBundleTest {
+class PrependLogBundleTest {
     private final String expectedHeaderName = "expected-header-name";
     private final SmartLogging smartLoggingConfig = new SmartLogging();
     private final PrependLogConfiguration prependLogConfig = () -> smartLoggingConfig;
@@ -37,8 +37,8 @@ public class PrependLogBundleTest {
     private ServletResponse mockResponse = mock(ServletResponse.class);
     private FilterRegistration.Dynamic dynamic = Mockito.mock(FilterRegistration.Dynamic.class);
 
-    @Before
-    public void setup() throws Exception {
+    @BeforeEach
+    void setup() throws Exception {
         MDC.clear();
 
         smartLoggingConfig.setUseHeader(expectedHeaderName);
@@ -55,18 +55,18 @@ public class PrependLogBundleTest {
         subject = filterCaptor.getValue();
     }
 
-    @After
-    public void cleanup() {
+    @AfterEach
+    void cleanup() {
         MDC.clear();
     }
 
     @Test
-    public void run_registerForAllUrlPatterns() {
+    void run_registerForAllUrlPatterns() {
         verify(dynamic).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
     }
 
     @Test
-    public void init_registerConfiguredExtraFields() throws ServletException {
+    void init_registerConfiguredExtraFields() throws ServletException {
         Map<String,String> extraFields = new HashMap<>();
         smartLoggingConfig.setExtraFields(extraFields);
 
@@ -76,14 +76,14 @@ public class PrependLogBundleTest {
     }
 
     @Test
-    public void init_registerTheHeaderName() throws ServletException {
+    void init_registerTheHeaderName() throws ServletException {
         subject.init(null);
 
         assertThat(LogEntryHolder.getUseHeader(), equalTo(expectedHeaderName));
     }
 
     @Test
-    public void doFilter_addValueFromHeaderToMdcIfPresent() throws IOException, ServletException {
+    void doFilter_addValueFromHeaderToMdcIfPresent() throws IOException, ServletException {
         String expectedValue = UUID.randomUUID().toString();
         doReturn(expectedValue).when(mockRequest).getHeader(expectedHeaderName);
 
@@ -97,7 +97,7 @@ public class PrependLogBundleTest {
     }
 
     @Test
-    public void doFilter_addGeneratedValueToMdcWhenHeaderNotPresent() throws IOException, ServletException {
+    void doFilter_addGeneratedValueToMdcWhenHeaderNotPresent() throws IOException, ServletException {
         doReturn(null).when(mockRequest).getHeader(expectedHeaderName);
 
         // Asserting that the MDC value has been set by the time the filter chain is invoked
