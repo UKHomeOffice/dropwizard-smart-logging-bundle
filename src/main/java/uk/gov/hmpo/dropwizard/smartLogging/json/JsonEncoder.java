@@ -1,32 +1,38 @@
 package uk.gov.hmpo.dropwizard.smartLogging.json;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.classic.spi.StackTraceElementProxy;
 import ch.qos.logback.classic.spi.ThrowableProxy;
 import ch.qos.logback.core.encoder.LayoutWrappingEncoder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.format.ISODateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.hmpo.dropwizard.smartLogging.bundle.LogEntryHolder;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class JsonEncoder extends LayoutWrappingEncoder<ILoggingEvent> {
 
-    private Logger logger = LoggerFactory.getLogger(JsonEncoder.class);
+    private final Logger logger = LoggerFactory.getLogger(JsonEncoder.class);
 
-    private static final byte[] RETURN_BYTES = "\n".getBytes(StandardCharsets.UTF_8);
+    private final String apphostname;
 
-    private String apphostname, appname, appenvironment, apptype, appsecurityzone;
+    private final String appname;
+
+    private final String appenvironment;
+
+    private final String apptype;
+
+    private final String appsecurityzone;
 
     public JsonEncoder(String apphostname, String appname, String appenvironment, String apptype, String appsecurityzone) {
         this.apphostname = apphostname;
@@ -41,14 +47,14 @@ public class JsonEncoder extends LayoutWrappingEncoder<ILoggingEvent> {
         try {
             return convertToBytes(event, event.getFormattedMessage());
         } catch (JsonProcessingException e) {
-            logger.error("Enable to process JSON: " + e);
+            logger.error(String.format("Enable to process JSON: %s", e));
             return new byte[0];
         }
     }
 
     private byte[] convertToBytes(ILoggingEvent event, String message) throws JsonProcessingException {
         HashMap<String, Object> jsonContent = new HashMap<>(LogEntryHolder.getExtraFields());
-        jsonContent.put("timestamp", new DateTime().withZone(DateTimeZone.UTC).toString(ISODateTimeFormat.dateTime()));
+        jsonContent.put("timestamp", LocalDateTime.now(Clock.systemUTC()).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
         jsonContent.put("apphostname", apphostname);
         jsonContent.put("appname", appname);
         jsonContent.put("appenvironment", appenvironment);
@@ -85,10 +91,8 @@ public class JsonEncoder extends LayoutWrappingEncoder<ILoggingEvent> {
 
         mdc.entrySet()
                 .stream()
-                .filter((e) -> !e.getKey().equals(LogEntryHolder.getUseHeader()))
-                .forEach((entry) ->
-                        extra.put(entry.getKey(), entry.getValue())
-                );
+                .filter(e -> !e.getKey().equals(LogEntryHolder.getUseHeader()))
+                .forEach(entry -> extra.put(entry.getKey(), entry.getValue()));
     }
 
     private void addRequestId(ILoggingEvent event, Map<String, Object> jsonContent) {
@@ -113,19 +117,19 @@ public class JsonEncoder extends LayoutWrappingEncoder<ILoggingEvent> {
                         ThrowableProxy tp = (ThrowableProxy) t;
                         exceptionMessage.put("stacktrace",
                                 Arrays.stream(ExceptionUtils.getRootCauseStackTrace(tp.getThrowable()))
-                                        .map(s -> s.replaceAll("\\tat ", ""))
-                                        .collect(Collectors.toList())
+                                        .map(s -> s.replace("\\tat ", ""))
+                                        .toList()
                         );
                     } else {
                         exceptionMessage.put("stacktrace",
                                 Arrays.stream(t.getStackTraceElementProxyArray())
-                                        .map(s -> s.getSTEAsString())
-                                        .map(s -> s.replaceAll("\\tat ", ""))
-                                        .collect(Collectors.toList())
+                                        .map(StackTraceElementProxy::getSTEAsString)
+                                        .map(s -> s.replace("\\tat ", ""))
+                                        .toList()
                         );
                     }
 
-                    return jsonContent;
-                });
+                return jsonContent;
+            });
     }
 }

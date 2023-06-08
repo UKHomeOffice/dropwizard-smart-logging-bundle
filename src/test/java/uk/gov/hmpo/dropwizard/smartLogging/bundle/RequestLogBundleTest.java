@@ -1,24 +1,24 @@
 package uk.gov.hmpo.dropwizard.smartLogging.bundle;
 
 import io.dropwizard.jetty.setup.ServletEnvironment;
-import io.dropwizard.setup.Environment;
-import org.junit.Before;
-import org.junit.Test;
+import io.dropwizard.core.setup.Environment;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterRegistration.Dynamic;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterRegistration.Dynamic;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Created by rgallet on 01/03/17.
  */
-public class RequestLogBundleTest {
+class RequestLogBundleTest {
     PrependLogConfiguration prependLogConfiguration = () ->
             new SmartLogging() {
                 {
@@ -34,7 +34,7 @@ public class RequestLogBundleTest {
     ServletEnvironment servletEnvironment = Mockito.mock(ServletEnvironment.class);
     FilterChain chain = Mockito.mock(FilterChain.class);
 
-    @Before
+    @BeforeEach
     public void prepare() {
         Mockito.reset(environment, servletEnvironment, chain);
 
@@ -42,7 +42,7 @@ public class RequestLogBundleTest {
     }
 
     @Test
-    public void testRegularUrl() throws Exception {
+    void testRegularUrl() throws Exception {
         Dynamic dynamic = Mockito.mock(Dynamic.class);
         ArgumentCaptor<Filter> argument = ArgumentCaptor.forClass(Filter.class);
         Mockito.doReturn(dynamic).when(servletEnvironment).addFilter(Mockito.anyString(), argument.capture());
@@ -66,7 +66,7 @@ public class RequestLogBundleTest {
     }
 
     @Test
-    public void testGETHealthCheckUrl() throws Exception {
+    void testGETHealthCheckUrl() throws Exception {
         Dynamic dynamic = Mockito.mock(Dynamic.class);
         ArgumentCaptor<Filter> argument = ArgumentCaptor.forClass(Filter.class);
         Mockito.doReturn(dynamic).when(servletEnvironment).addFilter(Mockito.anyString(), argument.capture());
@@ -90,7 +90,7 @@ public class RequestLogBundleTest {
     }
 
     @Test
-    public void testNonGETHealthCheckUrl() throws Exception {
+    void testNonGETHealthCheckUrl() throws Exception {
         Dynamic dynamic = Mockito.mock(Dynamic.class);
         ArgumentCaptor<Filter> argument = ArgumentCaptor.forClass(Filter.class);
         Mockito.doReturn(dynamic).when(servletEnvironment).addFilter(Mockito.anyString(), argument.capture());
